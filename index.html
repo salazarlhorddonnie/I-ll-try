@@ -573,6 +573,7 @@
 
   function closeCard(){
     overlay.classList.remove('show');
+    musicPlayer.pause();
     musicPlayer.currentTime = 0;
   }
 
