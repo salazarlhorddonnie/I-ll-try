@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>a constellation for you</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,600&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     EDIT ME: search for "EDIT:" comments to personalize this page
+     ============================================================ */
+
+  :root{
+    --bg-deep:#0a0e2a;
+    --bg-mid:#161c46;
+    --bg-soft:#232a5e;
+    --gold:#ffd76a;
+    --pink:#ff8fb3;
+    --lavender:#b9a6ff;
+    --text-light:#f4f1ff;
+    --text-dim:#9ba3d4;
+  }
+
+  *{box-sizing:border-box;}
+
+  html,body{
+    margin:0;
+    padding:0;
+    width:100%;
+    min-height:100%;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -10%, var(--bg-soft), transparent),
+      linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-mid) 60%, var(--bg-deep) 100%);
+    font-family:'Quicksand', sans-serif;
+    color:var(--text-light);
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  #sky{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+  }
+
+  .twinkle{
+    position:absolute;
+    background:#fff;
+    border-radius:50%;
+    opacity:0.4;
+    animation:twinkle 3s ease-in-out infinite;
+  }
+
+  @keyframes twinkle{
+    0%,100%{opacity:.15; transform:scale(1);}
+    50%{opacity:1; transform:scale(1.4);}
+  }
+
+  main{
+    position:relative;
+    z-index:1;
+    max-width:720px;
+    margin:0 auto;
+    padding:56px 20px 100px;
+    text-align:center;
+  }
+
+  .eyebrow{
+    font-family:'Quicksand', sans-serif;
+    font-weight:600;
+    letter-spacing:.28em;
+    text-transform:uppercase;
+    font-size:11px;
+    color:var(--lavender);
+    margin-bottom:18px;
+  }
+
+  h1{
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-weight:600;
+    font-size:clamp(28px,6vw,44px);
+    margin:0 0 10px;
+    line-height:1.15;
+  }
+
+  h1 .name{
+    font-style:normal;
+    font-weight:700;
+    background:linear-gradient(90deg,var(--gold),var(--pink));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+
+  .subtitle{
+    color:var(--text-dim);
+    font-size:15px;
+    max-width:420px;
+    margin:0 auto 8px;
+  }
+
+  .progress{
+    font-size:12px;
+    letter-spacing:.08em;
+    color:var(--gold);
+    margin-bottom:36px;
+    opacity:.85;
+  }
+
+  /* ---- constellation ---- */
+  .constellation-wrap{
+    position:relative;
+    width:100%;
+    max-width:520px;
+    aspect-ratio:4/5;
+    margin:0 auto;
+  }
+
+  svg.lines{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    overflow:visible;
+  }
+
+  svg.lines path{
+    fill:none;
+    stroke:url(#lineGradient);
+    stroke-width:.6;
+    stroke-linecap:round;
+    stroke-dasharray:2 2;
+    filter:drop-shadow(0 0 2px rgba(255,215,106,.5));
+    opacity:0;
+    transition:stroke-dashoffset 1.1s ease, opacity .6s ease;
+  }
+
+  svg.lines path.visible{
+    opacity:.75;
+  }
+
+  .star{
+    position:absolute;
+    width:34px;
+    height:34px;
+    transform:translate(-50%,-50%);
+    border:none;
+    background:none;
+    cursor:pointer;
+    padding:0;
+  }
+
+  .star .dot{
+    width:12px;
+    height:12px;
+    margin:11px auto;
+    border-radius:50%;
+    background:radial-gradient(circle, #fff, var(--lavender));
+    box-shadow:0 0 8px 2px rgba(185,166,255,.6);
+    transition:all .35s ease;
+  }
+
+  .star.visited .dot{
+    background:radial-gradient(circle,#fff, var(--gold));
+    box-shadow:0 0 14px 4px rgba(255,215,106,.85);
+    transform:scale(1.15);
+  }
+
+  .star:not(.visited){
+    animation:pulseStar 2.6s ease-in-out infinite;
+  }
+
+  .star.next{
+    animation: pulseStar 1s ease-in-out infinite;
+    transform:translate(-50%,-50%) scale(1.28);
+    z-index:3;
+  }
+
+  .star.next .dot{
+    background:radial-gradient(circle, #fff, #ffebc8 45%, rgba(255,143,179,0.8));
+    box-shadow:
+      0 0 26px 14px rgba(255,215,106,.95),
+      0 0 34px 18px rgba(255,143,179,.65),
+      0 0 8px 4px rgba(255,255,255,.9);
+    filter:brightness(1.35);
+  }
+
+  @keyframes pulseStar{
+    0%,100%{ filter:brightness(1.2); }
+    50%{ filter:brightness(2); transform:translate(-50%,-50%) scale(1.3); }
+  }
+
+  .star-label{
+    position:absolute;
+    top:36px;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:10.5px;
+    color:var(--text-dim);
+    white-space:nowrap;
+    opacity:.7;
+  }
+
+  .star.finale{
+    width:52px;
+    height:52px;
+    display:none;
+  }
+  .star.finale .dot{
+    width:20px;
+    height:20px;
+    margin:16px auto;
+    background:radial-gradient(circle,#fff,var(--pink));
+    box-shadow:0 0 22px 6px rgba(255,143,179,.9);
+    transition:all .35s ease;
+  }
+  .star.finale.ready{
+    display:block;
+    animation:pulseStar 1.6s ease-in-out infinite;
+  }
+  .star.finale.next .dot,
+  .star.finale.ready.next .dot {
+    box-shadow:
+      0 0 28px 10px rgba(255,215,106,.95),
+      0 0 40px 16px rgba(255,143,179,.75),
+      0 0 12px 5px rgba(255,255,255,.95);
+    filter:brightness(1.45);
+  }
+
+  /* ---- memory card ---- */
+  .overlay{
+    position:fixed;
+    inset:0;
+    z-index:20;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(6,8,26,.55);
+    backdrop-filter:blur(6px);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .35s ease;
+    padding:20px;
+  }
+  .overlay.show{
+    opacity:1;
+    pointer-events:auto;
+  }
+
+  .card{
+    background:linear-gradient(160deg, rgba(35,42,94,.9), rgba(15,19,54,.95));
+    border:1px solid rgba(185,166,255,.35);
+    border-radius:18px;
+    padding:34px 30px;
+    max-width:360px;
+    text-align:center;
+    transform:translateY(14px) scale(.97);
+    transition:transform .35s ease;
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
+  }
+  .overlay.show .card{
+    transform:translateY(0) scale(1);
+  }
+
+  .card .icon{
+    font-size:26px;
+    margin-bottom:14px;
+  }
+
+  .card p{
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-size:19px;
+    line-height:1.5;
+    margin:0 0 22px;
+  }
+
+  .card button{
+    font-family:'Quicksand',sans-serif;
+    font-weight:600;
+    font-size:13px;
+    letter-spacing:.03em;
+    background:var(--gold);
+    color:#2a1f00;
+    border:none;
+    border-radius:999px;
+    padding:10px 24px;
+    cursor:pointer;
+    transition:transform .2s ease;
+  }
+  .card button:hover{ transform:scale(1.05); }
+
+  /* ---- finale ---- */
+  .finale-panel{
+    position:relative;
+    z-index:1;
+    margin-top:46px;
+    opacity:0;
+    max-height:0;
+    overflow:hidden;
+    transition:opacity .8s ease;
+  }
+  .finale-panel.show{
+    opacity:1;
+    max-height:600px;
+  }
+
+  .finale-panel h2{
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-weight:700;
+    font-size:clamp(26px,5.5vw,38px);
+    margin:0 0 16px;
+    background:linear-gradient(90deg,var(--pink),var(--gold));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+
+  .finale-panel .msg{
+    max-width:440px;
+    margin:0 auto 28px;
+    font-size:15.5px;
+    line-height:1.7;
+    color:var(--text-light);
+  }
+
+  .choices{
+    display:flex;
+    gap:14px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-bottom:30px;
+  }
+  .choices button{
+    font-family:'Quicksand',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    border-radius:999px;
+    padding:13px 26px;
+    border:1px solid rgba(255,215,106,.5);
+    background:rgba(255,215,106,.08);
+    color:var(--text-light);
+    cursor:pointer;
+    transition:all .25s ease;
+  }
+  .choices button:hover{
+    background:var(--gold);
+    color:#2a1f00;
+    transform:translateY(-2px);
+  }
+
+  .signature{
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    color:var(--text-dim);
+    font-size:14px;
+  }
+
+  .final-response{
+    margin-top:18px;
+    font-size:15px;
+    color:var(--gold);
+    opacity:0;
+    transition:opacity .5s ease;
+  }
+  .final-response.show{ opacity:1; }
+
+  .confetti{
+    position:fixed;
+    top:-10px;
+    z-index:30;
+    border-radius:2px;
+    pointer-events:none;
+    animation:fall linear forwards;
+  }
+  @keyframes fall{
+    to{ transform:translateY(110vh) rotate(400deg); opacity:0; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .star:not(.visited), .star.finale.ready, .twinkle{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="sky"></div>
+
+<main>
+  <!-- EDIT: swap in their name -->
+  <h1>HI <span class="name">Mae</span></h1>
+  <p class="subtitle">Six stars. Six little memories. Tap them in any order.</p>
+  <div class="progress" id="progressText">0 of 6 found</div>
+
+  <div class="constellation-wrap">
+    <svg class="lines" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="lineGradient" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#ffd76a"/>
+          <stop offset="100%" stop-color="#ff8fb3"/>
+        </linearGradient>
+      </defs>
+      <!-- segments connecting the 7-point heart outline -->
+      <path id="seg-1" d="M30,25 L15,42"></path>
+      <path id="seg-2" d="M15,42 L28,60"></path>
+      <path id="seg-3" d="M28,60 L50,82"></path>
+      <path id="seg-4" d="M50,82 L72,60"></path>
+      <path id="seg-5" d="M72,60 L85,42"></path>
+      <path id="seg-6" d="M85,42 L70,25"></path>
+    </svg>
+
+    <!-- 6 memory stars + 1 finale star, positioned by percentage to trace a heart -->
+    <!-- EDIT: change the data-note text on each star to a real memory -->
+    <button class="star" style="top:25%; left:30%;" data-id="1" data-note="The day we first started talking — I still remember exactly how it happened. 🌱">
+      <span class="dot"></span><span class="star-label">the start</span>
+    </button>
+    <button class="star" style="top:42%; left:15%;" data-id="2" data-note="That one joke that only makes sense to us. Still funny every single time. 😂">
+      <span class="dot"></span><span class="star-label">our joke</span>
+    </button>
+    <button class="star" style="top:60%; left:28%;" data-id="3" data-note="The song that instantly makes me think of you. 🎵">
+      <span class="dot"></span><span class="star-label">that song</span>
+    </button>
+    <button class="star" style="top:82%; left:50%;" data-id="4" data-note="The day you said something small that ended up making my whole week better. ☀️">
+      <span class="dot"></span><span class="star-label">that day</span>
+    </button>
+    <button class="star" style="top:60%; left:72%;" data-id="5" data-note="Our favorite way to waste a few hours doing absolutely nothing. 🌙">
+      <span class="dot"></span><span class="star-label">our thing</span>
+    </button>
+    <button class="star" style="top:42%; left:85%;" data-id="6" data-note="The thing I quietly look forward to more than anything else lately. ✨">
+      <span class="dot"></span><span class="star-label">lately</span>
+    </button>
+
+    <button class="star finale" id="finaleStar" style="top:25%; left:70%;">
+      <span class="dot"></span><span class="star-label">?</span>
+    </button>
+  </div>
+
+  <div class="finale-panel" id="finalePanel">
+    <!-- EDIT: this is the actual confession — make it sound like you -->
+    <h2>okay, real talk 🌟</h2>
+    <p class="msg">
+      I made you connect the dots because I'm much braver behind a screen than in person.
+      But here it is: I like you. Like, actually like you — not just "fun to text" like you.
+      The whole constellation thing was basically an elaborate excuse to say that.
+    </p>
+    <div class="choices">
+      <button onclick="respond('aww')">aww, me too 🥹</button>
+      <button onclick="respond('more')">tell me more 👀</button>
+    </div>
+    <div class="final-response" id="finalResponse"></div>
+    <!-- EDIT: sign it -->
+    <p class="signature">— [Your Name]</p>
+  </div>
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="card">
+    <div class="icon">⭐</div>
+    <p id="cardText"></p>
+    <button onclick="closeCard()">close</button>
+  </div>
+</div>
+
+<script>
+  // background twinkle stars
+  const sky = document.getElementById('sky');
+  for(let i=0;i<130;i++){
+    const s = document.createElement('div');
+    s.className = 'twinkle';
+    const size = Math.random()*2 + 1;
+    s.style.width = size+'px';
+    s.style.height = size+'px';
+    s.style.top = Math.random()*100+'%';
+    s.style.left = Math.random()*100+'%';
+    s.style.animationDelay = (Math.random()*3)+'s';
+    s.style.animationDuration = (2+Math.random()*3)+'s';
+    sky.appendChild(s);
+  }
+
+  const stars = Array.from(document.querySelectorAll('.star[data-id]'));
+  const overlay = document.getElementById('overlay');
+  const cardText = document.getElementById('cardText');
+  const progressText = document.getElementById('progressText');
+  const finaleStar = document.getElementById('finaleStar');
+  const finalePanel = document.getElementById('finalePanel');
+  let visited = new Set();
+
+  function updateSegments(){
+    // segment i connects star i and star (i+1); segment 6 connects star6 to finale
+    for(let i=1;i<=5;i++){
+      const seg = document.getElementById('seg-'+i);
+      if(visited.has(String(i)) && visited.has(String(i+1))){
+        seg.classList.add('visible');
+      }
+    }
+    const seg6 = document.getElementById('seg-6');
+    if(visited.has('6') && finaleDone){
+      seg6.classList.add('visible');
+    }
+  }
+
+  function updateLastStarHighlight(){
+    stars.forEach(star=>star.classList.remove('next'));
+    finaleStar.classList.remove('next');
+    if(visited.size === 6){
+      finaleStar.classList.add('next');
+    }
+  }
+
+  let finaleDone = false;
+
+  stars.forEach(star=>{
+    star.addEventListener('click', ()=>{
+      const id = star.dataset.id;
+      visited.add(id);
+      star.classList.add('visited');
+      cardText.textContent = star.dataset.note;
+      overlay.classList.add('show');
+      progressText.textContent = visited.size + ' of 6 found';
+      updateLastStarHighlight();
+      updateSegments();
+      if(visited.size === 6){
+        finaleStar.classList.add('ready');
+      }
+    });
+  });
+
+  function closeCard(){
+    overlay.classList.remove('show');
+  }
+
+  finaleStar.addEventListener('click', ()=>{
+    if(visited.size < 6 || finaleDone) return;
+    finaleDone = true;
+    finaleStar.classList.add('visited');
+    updateSegments();
+    burstConfetti();
+    finalePanel.classList.add('show');
+    setTimeout(()=>{
+      finalePanel.scrollIntoView({behavior:'smooth', block:'center'});
+    }, 250);
+  });
+
+  function burstConfetti(){
+    const colors = ['#ffd76a','#ff8fb3','#b9a6ff','#ffffff'];
+    for(let i=0;i<80;i++){
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      const size = 5 + Math.random()*6;
+      c.style.width = size+'px';
+      c.style.height = size*0.4+'px';
+      c.style.left = Math.random()*100+'vw';
+      c.style.background = colors[Math.floor(Math.random()*colors.length)];
+      c.style.animationDuration = (2.2 + Math.random()*1.8)+'s';
+      c.style.animationDelay = (Math.random()*0.4)+'s';
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(), 4500);
+    }
+  }
+
+  // EDIT: change these two playful replies if you want
+  function respond(type){
+    const el = document.getElementById('finalResponse');
+    if(type === 'aww'){
+      el.textContent = "good. now go tell them that in person too 😄";
+    } else {
+      el.textContent = "there's nothing more to tell — just come find me and we'll talk 💬";
+    }
+    el.classList.add('show');
+  }
+</script>
+
+</body>
+</html>
