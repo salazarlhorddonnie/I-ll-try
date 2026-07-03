@@ -381,6 +381,24 @@
     to{ transform:translateY(110vh) rotate(400deg); opacity:0; }
   }
 
+  /* small mute toggle so the audio isn't a surprise/annoyance if unwanted */
+  #muteToggle{
+    position:fixed;
+    top:16px;
+    right:16px;
+    z-index:40;
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.25);
+    color:var(--text-light);
+    border-radius:999px;
+    padding:8px 14px;
+    font-family:'Quicksand',sans-serif;
+    font-size:12px;
+    cursor:pointer;
+    display:none;
+  }
+  #muteToggle.show{ display:block; }
+
   @media (prefers-reduced-motion: reduce){
     .star:not(.visited), .star.finale.ready, .twinkle{ animation:none; }
   }
@@ -389,6 +407,11 @@
 <body>
 
 <div id="sky"></div>
+
+<!-- EDIT: put your song file (e.g. song.mp3) in the same folder as this HTML file,
+     then set src below to match its filename -->
+<audio id="musicPlayer" src="song.mp3" preload="auto" loop></audio>
+<button id="muteToggle" onclick="toggleMute()">🔊 mute</button>
 
 <main>
   <!-- EDIT: swap in their name -->
@@ -415,7 +438,7 @@
 
     <!-- 6 memory stars + 1 finale star, positioned by percentage to trace a heart -->
     <!-- EDIT: change the data-note text on each star to a real memory -->
-    <button class="star" style="top:25%; left:30%;" data-id="1" data-note="The day we first started talking — I still remember exactly how it happened. 🌱">
+    <button class="star" style="top:25%; left:30%;" data-id="1" data-note="It started when I first saw you, it was in west campus.">
       <span class="dot"></span><span class="star-label">the start</span>
     </button>
     <button class="star" style="top:42%; left:15%;" data-id="2" data-note="That one joke that only makes sense to us. Still funny every single time. 😂">
@@ -487,7 +510,10 @@
   const progressText = document.getElementById('progressText');
   const finaleStar = document.getElementById('finaleStar');
   const finalePanel = document.getElementById('finalePanel');
+  const musicPlayer = document.getElementById('musicPlayer');
+  const muteToggle = document.getElementById('muteToggle');
   let visited = new Set();
+  let musicStarted = false;
 
   function updateSegments(){
     // segment i connects star i and star (i+1); segment 6 connects star6 to finale
@@ -516,6 +542,25 @@
   stars.forEach(star=>{
     star.addEventListener('click', ()=>{
       const id = star.dataset.id;
+
+      if (id === '3' && !musicStarted) {
+        // play() returns a promise — if the browser blocks autoplay
+        // or the file is missing, this catches it instead of throwing
+        // an uncaught error in the console.
+        musicPlayer.currentTime = 0;
+        const playPromise = musicPlayer.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              musicStarted = true;
+              muteToggle.classList.add('show');
+            })
+            .catch(err => {
+              console.warn('Music could not autoplay:', err);
+            });
+        }
+      }
+
       visited.add(id);
       star.classList.add('visited');
       cardText.textContent = star.dataset.note;
@@ -531,6 +576,11 @@
 
   function closeCard(){
     overlay.classList.remove('show');
+  }
+
+  function toggleMute(){
+    musicPlayer.muted = !musicPlayer.muted;
+    muteToggle.textContent = musicPlayer.muted ? '🔇 unmute' : '🔊 mute';
   }
 
   finaleStar.addEventListener('click', ()=>{
