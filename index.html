@@ -543,10 +543,7 @@
     star.addEventListener('click', ()=>{
       const id = star.dataset.id;
 
-      if (id === '3' && !musicStarted) {
-        // play() returns a promise — if the browser blocks autoplay
-        // or the file is missing, this catches it instead of throwing
-        // an uncaught error in the console.
+      if (id === '3') {
         musicPlayer.currentTime = 0;
         const playPromise = musicPlayer.play();
         if (playPromise !== undefined) {
@@ -576,6 +573,7 @@
 
   function closeCard(){
     overlay.classList.remove('show');
+    musicPlayer.currentTime = 0;
   }
 
   function toggleMute(){
